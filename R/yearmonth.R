@@ -66,11 +66,13 @@ yearmonth.Date <- function(x) {
 #' @export
 yearmonth.character <- function(x) {
   key_words <- regmatches(x, gregexpr("[[:alpha:]]+", x))
-  if (all(grepl("^[[:digit:]]{1~4}[[:space:]]*(m|mon|month)[[:space:]]*[[:digit:]]{1~4}$", key_words, ignore.case = TRUE))) {
+  if (all(grepl("^[[:digit:]]{1~4}[[:space:]]*(m|mon|month)[[:space:]]*[[:digit:]]{1~4}$",
+                key_words, ignore.case = TRUE))) {
     yr_mon <- regmatches(x, gregexpr("[[:digit:]]+", x))
     digits_lgl <- map_lgl(yr_mon, ~ !has_length(.x, 2))
     digits_len <- map_int(yr_mon, ~ sum(nchar(.x)))
-    if (any(digits_lgl) || any(digits_len < 5) || any(digits_len > 6)) {
+    digits_ind <- nchar(flatten_chr(yr_mon))
+    if (any(digits_lgl) || any(digits_len < 5) || any(digits_len > 6) || 3 == digits_ind) {
       abort("Character strings are not in a standard unambiguous format.")
     }
     yr_lgl <- map(yr_mon, ~ grepl("[[:digit:]]{4}", .x))
